@@ -58,10 +58,16 @@ x-airflow-common:
     # AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     # # For backward compatibility, with Airflow <2.3
     # AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: mongodb://airflow:airflow@mongodb:27017/airflow
+    # AIRFLOW__CORE__SQL_ALCHEMY_CONN: mongodb://airflow:airflow@mongodb:27017/airflow
 
 
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    # # AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    # AIRFLOW__CELERY__RESULT_BACKEND: mongodb+mongodb://airflow:airflow@mongodb:27017/airflow
+
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: mongodb://airflow:airflow@mongo/airflow
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: mongodb://airflow:airflow@mongo/airflow
+
+
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
@@ -111,20 +117,20 @@ services:
   #     start_period: 5s
   #   restart: always
   mongodb:
-  image: mongo:latest
-  environment:
-    MONGO_INITDB_DATABASE: airflow
-    MONGO_INITDB_ROOT_USERNAME: airflow
-    MONGO_INITDB_ROOT_PASSWORD: airflow
-  volumes:
-    - mongodb-data:/data/db
-  healthcheck:
-    test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-    interval: 10s
-    timeout: 30s
-    retries: 5
-    start_period: 5s
-  restart: always
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: airflow
+      MONGO_INITDB_ROOT_USERNAME: airflow
+      MONGO_INITDB_ROOT_PASSWORD: airflow
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    restart: always
 
   redis:
     image: redis:latest
@@ -159,7 +165,7 @@ services:
     <<: *airflow-common
     command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -229,7 +235,7 @@ services:
           exit 1
         fi
         if [[ -z "${AIRFLOW_UID}" ]]; then
-          echo
+          echopost
           echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
           echo "If you are on Linux, you SHOULD follow the instructions below to set "
           echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
@@ -320,5 +326,8 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+# volumes:
+#   postgres-db-volume:
+
 volumes:
-  postgres-db-volume:
+  mongo-db-volume:
