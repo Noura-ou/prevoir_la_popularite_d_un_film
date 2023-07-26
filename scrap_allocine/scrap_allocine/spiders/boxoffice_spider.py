@@ -21,7 +21,7 @@ class BoxofficeSpider(CrawlSpider):
 
     # URL de la première page
     base_url = 'https://www.allocine.fr/films'
-    num_pages = 600
+    num_pages = 100
 
     def start_requests(self):
         # Générer les URL de pagination
