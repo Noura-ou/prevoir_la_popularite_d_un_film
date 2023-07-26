@@ -9,7 +9,7 @@ CUSTOM_SETTINGS = {
     'CSV_FIELDS_TO_EXPORT': ['titre', 'date', 'genre', 'durée', 'réalisateur', 'distributeur', 'acteurs', 'titre_original', 
                              'nationalités', 'langue_d_origine', 'type_film', 'annee_production', 'budget', 'box_office_total', 'note_presse', 
                              'note_spectateurs', 'nombre_article', 'recompenses', 'description' ],  
-  #  'MONGODB_COLLECTION': 'movies_tous',
+    'MONGODB_COLLECTION': 'movies_tous',
 
     }
 
@@ -21,7 +21,7 @@ class FilmsSpider(scrapy.Spider):
 
     # URL de la première page
     base_url = 'https://www.allocine.fr/films'
-    num_pages = 100
+    num_pages = 600
 
     def start_requests(self):
         # Générer les URL de pagination
@@ -57,7 +57,11 @@ class FilmsSpider(scrapy.Spider):
         duree = convert_to_minutes(duree_dflt)
         genre = response.css('div.meta-body-item.meta-body-info span::text').getall()
         titre_original = response.xpath('//span[@class="light" and contains(text(), "Titre original")]/following-sibling::text()').get()
-        nationalités = response.xpath('//span[@class="what light" and contains(text(), "Nationalités")]/following-sibling::span[@class="that"]//following-sibling::span/text()').getall()
+
+
+      #  nationalités = response.xpath('//div[@class="item"]//span[contains(@class, "that")]//*[contains(@href, "pays")]/text()').getall()
+        nationalités = response.xpath('//span[contains(@class, "nationality")]/text()').get()
+
         type_film = response.xpath('//span[@class="what light" and contains(text(), "Type de film")]/following-sibling::span[@class="that"]/text()').get()
         langue_d_origine = response.xpath('//span[@class="what light" and contains(text(), "Langues")]/following-sibling::span[@class="that"]/text()').get()
         budget = response.xpath('//span[@class="what light" and contains(text(), "Budget")]/following-sibling::span[@class="that"]/text()').get()
