@@ -41,17 +41,42 @@ class FilmsSpider(scrapy.Spider):
             # Suivre le lien du film pour accéder à la page du film
             yield response.follow(film_link, callback=self.parse_movie, meta={'title': title.strip()})
 
+
+    # foncton pour scraper la date :
+
+    def extract_date(self, response):
+        # Essayer d'abord de trouver l'élément contenant la classe "date"
+        date_element = response.xpath('//div[@class="meta-body-item meta-body-info"]//span[@class="date"]/text()').get()
+        if date_element:
+            return date_element.strip()
+
+        # Si la première tentative échoue, essayer de trouver l'élément contenant la classe "xXx date blue-link"
+        date_element = response.css('div.meta-body-item.meta-body-info span.date.blue-link::text').get()
+        if date_element:
+            return date_element.strip()
+
+        # Si aucune date n'a été trouvée, renvoyer None ou une valeur par défaut
+        return None
+
     def parse_movie(self, response):
         
         items = AllocineFilmsItem()
         
         titre = response.xpath('(//div[@class="titlebar titlebar-page"]//div[@class="titlebar-title titlebar-title-lg"]//text())').get() 
-        date_dflt = response.css('span.date.blue-link::text').get()
+
+
+      #  date_dflt = response.css('div.meta-body-item.meta-body-info span.date.blue-link::text').get()
+        date_dflt = self.extract_date(response)
+    
+
+
         if date_dflt is not None:
             date_dflt = date_dflt.strip()
         date = convert_to_dd_mm_aaaa(date_dflt)
         réalisateur = response.css('span.light + span.blue-link::text').get()
-        distributeur = response.css('div.item span.that.blue-link::text').get()
+
+        distributeur = response.xpath('//span[contains(text(), "Distributeur")]/following-sibling::span/text()').get()
+
         acteurs = response.css('div.meta-body-item.meta-body-actor span:not(.light)::text').getall()
         duree_dflt =  response.xpath('//div[@class="meta-body-item meta-body-info"]/span[@class="spacer"]/following-sibling::text()[1]').get()
         duree = convert_to_minutes(duree_dflt)
@@ -59,7 +84,6 @@ class FilmsSpider(scrapy.Spider):
         titre_original = response.xpath('//span[@class="light" and contains(text(), "Titre original")]/following-sibling::text()').get()
 
 
-      #  nationalités = response.xpath('//div[@class="item"]//span[contains(@class, "that")]//*[contains(@href, "pays")]/text()').getall()
         nationalités = response.xpath('//span[contains(@class, "nationality")]/text()').get()
 
         type_film = response.xpath('//span[@class="what light" and contains(text(), "Type de film")]/following-sibling::span[@class="that"]/text()').get()
