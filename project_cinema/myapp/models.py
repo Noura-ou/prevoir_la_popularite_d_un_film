@@ -6,6 +6,7 @@ class Film(models.Model):
     duree = models.IntegerField()  # Durée en minutes
     genre = models.CharField(max_length=50)
     nombre_entrees_estimees = models.IntegerField(default=0)  # Champ pour stocker l'estimation du nombre d'entrées en première semaine
-
+    # champs à ajouter
+    
     def __str__(self):
         return self.titre

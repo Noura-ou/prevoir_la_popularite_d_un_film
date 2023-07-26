@@ -5,6 +5,9 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from .forms import SignupForm,LoginForm
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Film
 
 
 def hello(request):
@@ -75,3 +78,22 @@ def logout_user(request):
     logout(request)
     return redirect('login')
 ############################################################################
+
+    ###########
+    ### API ###
+    ###########
+
+@api_view(['GET'])
+def estimation_entrees_films(request):
+    # Obtenez la liste des films qui sortiront le mercredi suivant
+    films_a_projeter = Film.objects.filter(date_de_sortie__week_day=3)
+
+    # Effectuez vos prédictions sur le nombre d'entrées pour chaque film ici
+    # (vous devrez avoir déjà intégré votre modèle de prédiction dans cette partie)
+
+    # Supposez que vous ayez déjà calculé le nombre d'entrées estimées pour chaque film
+    resultats_estimations = {}
+    for film in films_a_projeter:
+        resultats_estimations[film.titre] = film.nombre_entrees_estimees
+
+    return Response(resultats_estimations)
