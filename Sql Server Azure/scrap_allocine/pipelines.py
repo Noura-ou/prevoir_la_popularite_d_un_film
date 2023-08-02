@@ -128,19 +128,8 @@ class AzureSQLPipeline:
         self.delete_table('acteurs_films')
         self.delete_table('films')
 
-        # Créer la table "acteurs_films"
-        create_acteurs_films_table_query = '''
-        CREATE TABLE acteurs_films (
-            id INT IDENTITY(1,1) PRIMARY KEY,
-            film_id INT,
-            acteurs VARCHAR(500)
-        );
-        '''
-        self.cursor.execute(create_acteurs_films_table_query)
-        self.conn.commit()
 
-        
-        # Créer la table "films"
+               # Créer la table "films"
         create_table_query = '''
         CREATE TABLE films (
             id INT IDENTITY(1,1) PRIMARY KEY,
@@ -162,8 +151,32 @@ class AzureSQLPipeline:
             description VARCHAR(2000)
         );
         '''
+
+ 
+       
         self.cursor.execute(create_table_query)
         self.conn.commit()
+
+
+        # Créer la table "acteurs_films"
+        create_acteurs_films_table_query = '''
+        CREATE TABLE acteurs_films (
+            id_acteurs_films INT IDENTITY(1,1) PRIMARY KEY,
+            film_id INT,
+            acteurs VARCHAR(500),
+            FOREIGN KEY (film_id) REFERENCES films(id)
+                );
+            '''
+        self.cursor.execute(create_acteurs_films_table_query)
+        self.conn.commit()
+
+
+
+
+        
+ 
+
+
 
 
     def delete_table(self, table_name):

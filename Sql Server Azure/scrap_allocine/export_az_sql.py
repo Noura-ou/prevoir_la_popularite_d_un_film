@@ -43,8 +43,11 @@ create_table_query = '''
         CREATE TABLE top_acteurs (
             id INT IDENTITY(1,1) PRIMARY KEY,
             acteur VARCHAR(500),
+            
         );
         '''
+
+
 
 # Exécutez la requête pour créer la table
 cursor.execute(create_table_query)
