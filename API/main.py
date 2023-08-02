@@ -9,11 +9,11 @@ import pyodbc
 
 
 
-server = 'your_server.database.windows.net'
-database = 'your_database'
-username = 'your_username'
-password = 'your_password'
-driver= '{ODBC Driver 17 for SQL Server}'
+# server = 'your_server.database.windows.net'
+# database = 'your_database'
+# username = 'your_username'
+# password = 'your_password'
+# driver= '{ODBC Driver 17 for SQL Server}'
 
 model = joblib.load('modele.pkl')
 
@@ -25,13 +25,18 @@ class FilmInput(BaseModel):
     nombre_article: float
 
 
-@app.get("/update_actors_count/")
-def update_actors_count():
-    df_actors_data = crud.update_actors_count_from_azure_db()
-    return df_actors_data.to_dict(orient='records')
+# @app.get("/update_actors_count/")
+# def update_actors_count():
+#     df_actors_data = crud.update_actors_count_from_azure_db()
+#     return df_actors_data.to_dict(orient='records')
      
 @app.post("/predict/")
 def predict_film_boxoffice(film: FilmInput):
+
+    data = crud.update_actors_count_from_azure_db()
+
+    df_actors_data = pd.DataFrame(data, columns=['titre'])
+
 
     prediction_data = [[film.annee_production, film.durée, film.nombre_article]]
 
