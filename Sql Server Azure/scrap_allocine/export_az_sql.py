@@ -27,37 +27,22 @@ def delete_table(table_name):
         conn.commit()
 
         # Delete les table s'il existent
-delete_table('films_box_off')
+delete_table('top_acteurs')
     
     
 # Obtenir le chemin absolu du répertoire actuel
 current_directory = os.path.dirname(os.path.abspath(__file__))
 # Spécifier le nom du fichier CSV
-csv_file_name = 'movies_tous.csv'
+csv_file_name = 'top_acteurs.csv'
 
 # Concaténer le chemin absolu avec le nom du fichier CSV
 csv_file_path = os.path.join(current_directory, csv_file_name)
 
 
 create_table_query = '''
-        CREATE TABLE films_box_off (
+        CREATE TABLE top_acteurs (
             id INT IDENTITY(1,1) PRIMARY KEY,
-            titre VARCHAR(500),
-            date VARCHAR(500),
-            durée VARCHAR(500),
-            réalisateur VARCHAR(500),
-            distributeur VARCHAR(500),
-            titre_original VARCHAR(500),
-            nationalités VARCHAR(500),
-            langue_d_origine VARCHAR(500),
-            type_film VARCHAR(500),
-            annee_production VARCHAR(500),
-            budget VARCHAR(500),
-            note_presse VARCHAR(500),
-            note_spectateurs VARCHAR(500),
-            nombre_article VARCHAR(500),
-            recompenses VARCHAR(500),
-            description VARCHAR(2000)
+            acteur VARCHAR(500),
         );
         '''
 
@@ -67,10 +52,10 @@ conn.commit()
 
 
 # Spécifiez le nom de la table dans la base de données où vous souhaitez importer les données
-table_name = 'films_box_off'
+table_name = 'top_acteurs'
 
 # Définissez le nom des colonnes dans le fichier CSV dans le même ordre que dans la table
-columns = ['titre', 'date', 'durée', 'réalisateur','distributeur', 'titre_original', 'nationalités', 'langue_d_origine', 'type_film', 'annee_production','budget', 'note_presse','note_spectateurs','nombre_article','recompenses', 'description' ]  # Remplacez par les noms de vos colonnes
+columns = ['acteur' ]  # Remplacez par les noms de vos colonnes
 
 # Ouvrez le fichier CSV et insérez les données dans la base de données
 with open(csv_file_path, 'r', encoding='utf-8') as csvfile:
