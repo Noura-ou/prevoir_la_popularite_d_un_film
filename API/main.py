@@ -20,9 +20,8 @@ model = joblib.load('modele.pkl')
 app = FastAPI()
 
 class FilmInput(BaseModel):
-    annee_production: float
-    durée: float
-    nombre_article: float
+    titre: str
+    
 
 
 # @app.get("/update_actors_count/")
@@ -38,13 +37,13 @@ def predict_film_boxoffice(film: FilmInput):
     df_actors_data = pd.DataFrame(data, columns=['titre'])
 
 
-    prediction_data = [[film.annee_production, film.durée, film.nombre_article]]
+    df_actors_data = [[film.titre]]
 
     # Créer un DataFrame pandas à partir des données de prédiction
-    df_prediction = pd.DataFrame(prediction_data, columns=["annee_production", "durée", "nombre_article"])
+    df_prediction = pd.DataFrame(df_actors_data, columns=["titre"])
 
-    # Nettoyer les données en appelant la fonction clean_data depuis le module crud.py
-    df_prediction = crud.clean_data(df_prediction)
+    # # Nettoyer les données en appelant la fonction clean_data depuis le module crud.py
+    # df_prediction = crud.clean_data(df_prediction)
 
     # Utiliser le modèle chargé pour effectuer des prédictions
     prediction = model.predict(df_prediction)
