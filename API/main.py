@@ -37,7 +37,6 @@ def predict_film_boxoffice(film: FilmInput):
     df_actors_data = pd.DataFrame(data, columns=['titre'])
 
 
-    df_actors_data = [[film.titre]]
 
     # Créer un DataFrame pandas à partir des données de prédiction
     df_prediction = pd.DataFrame(df_actors_data, columns=["titre"])
