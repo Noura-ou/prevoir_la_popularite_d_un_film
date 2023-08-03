@@ -48,16 +48,24 @@ cursor = conn.cursor()
     # GROUP BY acteurs_films.id, acteurs_films.film_id, acteurs_films.acteurs_connu, films.id;
 
     # """
-df_acteurs_connus = pd.read_csv('API/top_acteurs.csv')
+# df_acteurs_connus = pd.read_csv('API/top_acteurs.csv')
 
-acteurs_connus = set(df_acteurs_connus['acteur'])
+# acteurs_connus = set(df_acteurs_connus['acteur'])
+# #SELECT titre,duree, distributeur,realisateur,nationalites, langue_d_origine,
+#        type_film, annee_production,acteurs,acteur
+#             FROM films,top_acteurs
+#             INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
 
 
-query= """ SELECT titre,duree, distributeur,realisateur,nationalites, langue_d_origine,
-       type_film, annee_production, acteurs_films.acteurs
-            FROM films
-            INNER JOIN acteurs_films ON films.id = acteurs_films.film_id;
+query= """ SELECT titre, duree, distributeur, realisateur, nationalites, langue_d_origine,
+       type_film, annee_production, acteurs, top_acteurs.acteur
+FROM films
+INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
+INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id;
+
     """
+
+
 
     # cursor.execute(query)
     # results = cursor.fetchall()
@@ -66,8 +74,13 @@ query= """ SELECT titre,duree, distributeur,realisateur,nationalites, langue_d_o
 
 df_azure_data = pd.read_sql(query, conn)
 
+# Créer une liste des acteurs connus
+acteurs_connus = df_azure_data["acteur"].unique().tolist()
 
-df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in eval(x) if acteur in acteurs_connus]))
+# Appliquer la fonction lambda pour compter le nombre d'acteurs connus dans chaque film
+df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in ast.literal_eval(x) if acteur in acteurs_connus]))
+
+#df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in eval(x) if acteur in df_azure_data["acteur"]]))
 # df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in eval(x) if acteur in df_acteurs_connus]))
 
 #df_azure_data['nombre_acteurs_connus'] = acteurs_connus.apply(lambda x: x.count(',') + 1 if isinstance(x, str) else 0)
