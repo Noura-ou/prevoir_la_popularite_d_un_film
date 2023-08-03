@@ -7,21 +7,7 @@ import pandas as pd
 import ast 
 import re
 
-# Charger les variables d'environnement à partir du fichier .env
 
-
-# def clean_data(data):
-#     # Remplacer les valeurs manquantes par des zéros
-#     data = data.dropna()
-
-#     for col in data.columns:
-#         data[col] = data[col].apply(lambda x: x.translate(str.maketrans('', '', string.punctuation)))
-
-
-#     # Supprimer les doublons
-#     data = data.drop_duplicates()
-
-#     return data
 
 
 # def update_actors_count_from_azure_db():
@@ -40,28 +26,24 @@ conn = pyodbc.connect(connection_string)
 
 cursor = conn.cursor()
 
-    # Exécuter une requête SQL pour récupérer les données
-    # query ="""
-    # SELECT acteurs_films.*, COUNT(acteurs_films.acteurs_connu) as nombre_acteur_connu
-    # FROM acteurs_films
-    # INNER JOIN films ON acteurs_films.film_id = films.id
-    # GROUP BY acteurs_films.id, acteurs_films.film_id, acteurs_films.acteurs_connu, films.id;
-
-    # """
-# df_acteurs_connus = pd.read_csv('API/top_acteurs.csv')
-
-# acteurs_connus = set(df_acteurs_connus['acteur'])
-# #SELECT titre,duree, distributeur,realisateur,nationalites, langue_d_origine,
-#        type_film, annee_production,acteurs,acteur
-#             FROM films,top_acteurs
-#             INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
 
 
-query= """ SELECT titre, duree, distributeur, realisateur, nationalites, langue_d_origine,
-       type_film, annee_production, acteurs, top_acteurs.acteur
-FROM films
-INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
-INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id;
+query= """ SELECT titre,
+       MAX(duree) AS duree,
+       MAX(distributeur) AS distributeur,
+       MAX(realisateur) AS realisateur,
+       MAX(nationalites) AS nationalites,
+       MAX(langue_d_origine) AS langue_d_origine,
+       MAX(type_film) AS type_film,
+       MAX(genre) AS genre,
+       MAX(annee_production) AS annee_production,
+       STRING_AGG(acteurs, ',') AS acteurs,
+       STRING_AGG(top_acteurs.acteur, ',') AS acteur
+       FROM films
+       INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
+       INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id
+       GROUP BY titre;
+
 
     """
 
@@ -74,29 +56,47 @@ INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id;
 
 df_azure_data = pd.read_sql(query, conn)
 
-# Créer une liste des acteurs connus
-acteurs_connus = df_azure_data["acteur"].unique().tolist()
+import unicodedata
 
-# Appliquer la fonction lambda pour compter le nombre d'acteurs connus dans chaque film
-df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in ast.literal_eval(x) if acteur in acteurs_connus]))
+# Fonction pour nettoyer le nom d'un acteur
+def clean_name(name):
+    name = name.lower()                       # Convertir en minuscules
+    name = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore').decode('utf-8')  # Supprimer les accents
+    name = name.replace(" ", "")              # Supprimer les espaces
+    return name
 
-#df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in eval(x) if acteur in df_azure_data["acteur"]]))
-# df_azure_data['nombre_acteurs_connus'] = df_azure_data['acteurs'].apply(lambda x: len([acteur for acteur in eval(x) if acteur in df_acteurs_connus]))
+# Calculer le nombre d'acteurs connus
+def calculate_known_actors(row):
+    actor = clean_name(row['acteur'][0])
+    actors = [clean_name(a) for a in row['acteurs']]
 
-#df_azure_data['nombre_acteurs_connus'] = acteurs_connus.apply(lambda x: x.count(',') + 1 if isinstance(x, str) else 0)
 
-# Utiliser ast.literal_eval() pour convertir les chaînes de caractères en listes d'acteurs
+    return sum(actor in a for a in actors)
 
-# Utiliser la fonction extract_actors pour extraire les noms d'acteurs de la colonne acteurs
+def calculate_known_realisateur(row):
+    actor = clean_name(row['acteur'][0])
+    realisateur = [clean_name(a) for a in row['realisateur']]
 
+    return int(any(actor in a for a in realisateur))
+
+df_azure_data['nombre_acteurs_connus'] = df_azure_data.apply(calculate_known_actors, axis=1)
+df_azure_data['realisateur_connu'] = df_azure_data.apply(calculate_known_realisateur, axis=1)
+
+
+
+
+
+unique_genres = set(g for row in df_azure_data['genre'] for g in row)
+
+for genre in unique_genres:
+    df_azure_data[genre] = df_azure_data['genre'].apply(lambda x: 1 if genre in x else 0)
 
 
     
    
 conn.close()
 #return df_azure_data
-print(df_azure_data)
-
+print(df_azure_data.columns)
 
 
 
