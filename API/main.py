@@ -1,23 +1,4 @@
 
-# @app.post("/predict/")
-# def predict_film_boxoffice(film: FilmInput):
-#     try:
-# data = crud.update_from_azure_db()
-
-
-# df_azure = pd.DataFrame(data, columns=['titre'])
-# print(df_azure)
-
-#         # Créer un DataFrame pandas à partir des données de prédiction
-#         df_prediction = pd.DataFrame(df_azure, columns=["film"])
-
-#         # Utiliser le modèle chargé pour effectuer des prédictions
-#         prediction = model.predict(df_prediction)
-
-#         return {"box_office_prediction": prediction[0]}
-    
-#     except HTTPException as e:
-#         raise e
 
 from fastapi import FastAPI, HTTPException
 import joblib
@@ -32,6 +13,7 @@ app = FastAPI()
 
 class FilmInput(BaseModel):
     titre: str
+
 
 
 
@@ -54,9 +36,12 @@ def predict_film_boxoffice(film: FilmInput):
         # Faire les prédictions avec le modèle chargé
         prediction = model.predict(film_data)
 
-        return {"box_office_prediction": int(prediction)}
+        return {"box_office_prediction": int(abs(prediction))}
     
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Erreur lors de la prédiction du box-office du film")
+
+
+

@@ -41,16 +41,41 @@ def update_from_azure_db():
            MAX(annee_production) AS annee_production,
            STRING_AGG(acteurs, ',') AS acteurs,
            STRING_AGG(top_acteurs.acteur, ',') AS acteurs_connus
-           FROM films
-           INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
-           INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id
+           FROM movies
+           INNER JOIN actors ON movies.id = actors.film_id
+           INNER JOIN top_acteurs ON actors.id_acteurs_films = top_acteurs.id
            GROUP BY titre;
             """
 
         df_azure_data = pd.read_sql(query, conn)
 
-# Fermer la connexion après utilisation
+# Fermer la connexion après utilisationS
         conn.close()
+
+        columns_to_replace_with_zero = ['durée', 'annee_production']
+        
+        columns_to_check = ['durée', 'distributeur', 'réalisateur', 'nationalités', 'langue_d_origine',
+                    'type_film', 'genres', 'annee_production', 'acteurs', 'acteurs_connus']
+
+# Boucle à travers les colonnes spécifiées
+        for column in columns_to_check:
+                if column in columns_to_replace_with_zero:
+                        df_azure_data[column].fillna(0, inplace=True)
+                else:
+                        df_azure_data[column].fillna('inconnu', inplace=True)
+
+
+
+#         columns_to_check = ['durée', 'distributeur', 'réalisateur', 'nationalités', 'langue_d_origine',
+#                     'type_film', 'genres', 'annee_production', 'acteurs']
+
+# # Boucle à travers les colonnes et effectue les vérifications et remplacements
+#         for column in columns_to_check:
+#                 df_azure_data[column] = df_azure_data[column].apply(lambda x: x if x is not None and not pd.isna(x) else ('durée' if column == 'durée' or column == 'annee_production' else 'inconnu'))
+
+# # Remplacer les valeurs manquantes dans les colonnes 'durée' et 'annee_production' par 0
+#         df_azure_data['durée'].fillna(0, inplace=True)
+#         df_azure_data['annee_production'].fillna(0, inplace=True)
 
 # Fonction pour nettoyer le nom d'un acteur
         def clean_name(name):
@@ -95,7 +120,5 @@ def update_from_azure_db():
 
 
 
-  
 
 
- 
