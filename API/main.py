@@ -24,51 +24,35 @@ app = FastAPI()
 class FilmInput(BaseModel):
     titre: str
 
-data = crud.update_from_azure_db()
-
-# Création d'une instance de FilmInput avec le titre du film souhaité
-film = FilmInput(titre="Insidious: The Red Door")
-
-# Récupération du titre du film à partir de l'objet FilmInput
-film_titre = film.titre
-
-# Filtrer les données pour garder uniquement les informations concernant le film spécifié
-film_data = data[data['titre'].str.lower() == film_titre.lower()]
-
-print(film_data.columns)
-
-prediction = model.predict(film_data)
-
-print(prediction)
 
 
 
 
-# @app.post("/predict/")
-# def predict_film_boxoffice(film: FilmInput):
-#     try:
-#         data = crud.update_from_azure_db()
+@app.post("/predict/")
+def predict_film_boxoffice(film: FilmInput):
+    try:
+        data = crud.update_from_azure_db()
 
-#         # Récupérer le titre du film à partir de l'objet FilmInput
-#         film_titre = film.titre
+        # Récupérer le titre du film à partir de l'objet FilmInput
+        film_titre = film.titre
 
-#         # Filtrer les données pour garder uniquement les informations concernant le film spécifié
-#         film_data = data[data['titre'].str.lower() == film_titre.lower()]
+        # Filtrer les données pour garder uniquement les informations concernant le film spécifié
+        film_data = data[data['titre'].str.lower() == film_titre.lower()]
 
-#         print("Données filtrées :", film_data)
+        print("Données filtrées :", film_data)
 
-#         if film_data.empty:
-#             raise HTTPException(status_code=404, detail="Film non trouvé dans la base de données")
+        if film_data.empty:
+            raise HTTPException(status_code=404, detail="Film non trouvé dans la base de données")
 
-#         # Faire les prédictions avec le modèle chargé
-#         prediction = model.predict(film_data)
+        # Faire les prédictions avec le modèle chargé
+        prediction = model.predict(film_data)
 
-#         return {"box_office_prediction": int(abs(prediction))}
+        return {"box_office_prediction": int(abs(prediction))}
     
-#     except HTTPException as e:
-#         raise e
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Erreur lors de la prédiction du box-office du film")
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erreur lors de la prédiction du box-office du film")
 
 
 
