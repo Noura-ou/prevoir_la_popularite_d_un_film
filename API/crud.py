@@ -1,5 +1,3 @@
-
-
 from fastapi import HTTPException
 import string 
 import pyodbc
@@ -15,7 +13,6 @@ def update_from_azure_db():
     try:
         # Load environment variables
 
-
 # Load environment variables
         load_dotenv()
         username = os.getenv('DB_USER')
@@ -27,7 +24,6 @@ def update_from_azure_db():
 # Établir la connexion à votre base de données
         connection_string = f'Driver={DB_Driver};Server=tcp:{server},1433;Database={database};Uid={username};Pwd={password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
         conn = pyodbc.connect(connection_string)
-
         cursor = conn.cursor()
 
         query = """ SELECT titre,
