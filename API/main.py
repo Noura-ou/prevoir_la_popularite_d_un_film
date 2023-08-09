@@ -12,10 +12,11 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Chemin vers le modèle pré-entraîné dans le même répertoire
-model_path = os.path.join(script_dir, 'pipem.joblib')
+model_path = os.path.join(script_dir, 'best_model.joblib')
 
 # Charger le modèle pré-entraîné
 model = joblib.load(model_path)
+  
 
 app = FastAPI()
 

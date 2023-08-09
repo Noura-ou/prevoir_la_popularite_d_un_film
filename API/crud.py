@@ -27,13 +27,13 @@ def update_from_azure_db():
         cursor = conn.cursor()
 
         query = """ SELECT titre,
-           MAX(duree) AS durée,
+           MAX(duree) AS duree,
            MAX(distributeur) AS distributeur,
-           MAX(realisateur) AS réalisateur,
-           MAX(nationalites) AS nationalités,
+           MAX(realisateur) AS realisateur,
+           MAX(nationalites) AS nationalites,
            MAX(langue_d_origine) AS langue_d_origine,
            MAX(type_film) AS type_film,
-           MAX(genre) AS genres,
+           MAX(genre) AS genre,
            MAX(annee_production) AS annee_production,
            STRING_AGG(acteurs, ',') AS acteurs,
            STRING_AGG(top_acteurs.acteur, ',') AS acteurs_connus
@@ -48,10 +48,10 @@ def update_from_azure_db():
 # Fermer la connexion après utilisationS
         conn.close()
 
-        columns_to_replace_with_zero = ['durée', 'annee_production']
+        columns_to_replace_with_zero = ['duree', 'annee_production']
         
-        columns_to_check = ['durée', 'distributeur', 'réalisateur', 'nationalités', 'langue_d_origine',
-                    'type_film', 'genres', 'annee_production', 'acteurs', 'acteurs_connus']
+        columns_to_check = ['duree', 'distributeur', 'realisateur', 'nationalites', 'langue_d_origine',
+                    'type_film', 'genre', 'annee_production', 'acteurs', 'acteurs_connus',]
 
 # Boucle à travers les colonnes spécifiées
         for column in columns_to_check:
@@ -62,7 +62,16 @@ def update_from_azure_db():
 
 
 
+#         columns_to_check = ['durée', 'distributeur', 'réalisateur', 'nationalités', 'langue_d_origine',
+#                     'type_film', 'genres', 'annee_production', 'acteurs']
 
+# # Boucle à travers les colonnes et effectue les vérifications et remplacements
+#         for column in columns_to_check:
+#                 df_azure_data[column] = df_azure_data[column].apply(lambda x: x if x is not None and not pd.isna(x) else ('durée' if column == 'durée' or column == 'annee_production' else 'inconnu'))
+
+# # Remplacer les valeurs manquantes dans les colonnes 'durée' et 'annee_production' par 0
+#         df_azure_data['durée'].fillna(0, inplace=True)
+#         df_azure_data['annee_production'].fillna(0, inplace=True)
 
 # Fonction pour nettoyer le nom d'un acteur
         def clean_name(name):
@@ -80,25 +89,27 @@ def update_from_azure_db():
 
         def calculate_known_realisateur(row):
             actor = clean_name(row['acteurs_connus'][0])
-            realisateur = [clean_name(a) for a in row['réalisateur']]
+            realisateur = [clean_name(a) for a in row['realisateur']]
 
             return int(any(actor in a for a in realisateur))
 
         df_azure_data['nombre_acteurs_connus'] = df_azure_data.apply(calculate_known_actors, axis=1)
         df_azure_data['realisateur_connu'] = df_azure_data.apply(calculate_known_realisateur, axis=1)
 
+        df_azure_data['genre'] = df_azure_data['genre'].str.split('_', n=1).str[0]
 
-        df_azure_data['genres'] = df_azure_data['genres'].str.replace("[\[\]']", "", regex=True)
-        df_azure_data['genres'] = df_azure_data['genres'].str.split('_')
 
-        unique_genres = set(g for row in df_azure_data['genres'] for g in row)
+        # df_azure_data['genres'] = df_azure_data['genres'].str.replace("[\[\]']", "", regex=True)
+        # df_azure_data['genres'] = df_azure_data['genres'].str.split('_')
 
-        for genre in unique_genres:
-                df_azure_data[genre] = df_azure_data['genres'].apply(lambda x: 1 if genre in x else 0)
+        # unique_genres = set(g for row in df_azure_data['genres'] for g in row)
+
+        # for genre in unique_genres:
+        #         df_azure_data[genre] = df_azure_data['genres'].apply(lambda x: 1 if genre in x else 0)
 
 
 
         return df_azure_data
 
     except pyodbc.Error as err:
-        raise HTTPException(status_code=500, detail=" Nooooooooooooo Error connecting to the Azure database")
+        raise HTTPException(status_code=500, detail="Error connecting to the Azure database")
