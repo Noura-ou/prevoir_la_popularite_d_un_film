@@ -16,11 +16,22 @@ class FilmInput(BaseModel):
 
 data = crud.update_from_azure_db()
 
-        # Récupérer le titre du film à partir de l'objet FilmInput
+# Création d'une instance de FilmInput avec le titre du film souhaité
+film = FilmInput(titre="Une nuit")
+
+# Récupération du titre du film à partir de l'objet FilmInput
 film_titre = film.titre
 
-        # Filtrer les données pour garder uniquement les informations concernant le film spécifié
+# Filtrer les données pour garder uniquement les informations concernant le film spécifié
 film_data = data[data['titre'].str.lower() == film_titre.lower()]
+
+print(film_data.columns)
+
+prediction = model.predict(film_data)
+
+print(prediction)
+
+
 
 
 # @app.post("/predict/")

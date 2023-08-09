@@ -31,10 +31,10 @@ def update_from_azure_db():
         cursor = conn.cursor()
 
         query = """ SELECT titre,
-           MAX(duree) AS durée,
+           MAX(duree) AS duree,
            MAX(distributeur) AS distributeur,
-           MAX(realisateur) AS réalisateur,
-           MAX(nationalites) AS nationalités,
+           MAX(realisateur) AS realisateur,
+           MAX(nationalites) AS nationalites,
            MAX(langue_d_origine) AS langue_d_origine,
            MAX(type_film) AS type_film,
            MAX(genre) AS genres,
@@ -52,10 +52,10 @@ def update_from_azure_db():
 # Fermer la connexion après utilisationS
         conn.close()
 
-        columns_to_replace_with_zero = ['durée', 'annee_production']
+        columns_to_replace_with_zero = ['duree', 'annee_production']
         
-        columns_to_check = ['durée', 'distributeur', 'réalisateur', 'nationalités', 'langue_d_origine',
-                    'type_film', 'genres', 'annee_production', 'acteurs', 'acteurs_connus']
+        columns_to_check = ['duree', 'distributeur', 'realisateur', 'nationalites', 'langue_d_origine',
+                    'type_film', 'genres', 'annee_production', 'acteurs', 'acteurs_connus',]
 
 # Boucle à travers les colonnes spécifiées
         for column in columns_to_check:
@@ -93,7 +93,7 @@ def update_from_azure_db():
 
         def calculate_known_realisateur(row):
             actor = clean_name(row['acteurs_connus'][0])
-            realisateur = [clean_name(a) for a in row['réalisateur']]
+            realisateur = [clean_name(a) for a in row['realisateur']]
 
             return int(any(actor in a for a in realisateur))
 
