@@ -7,7 +7,7 @@ import pandas as pd
 import crud
 
 # Charger le modèle pré-entraîné
-model = joblib.load('pipem.joblib')
+model = joblib.load('best_model.joblib')       
 
 app = FastAPI()
 

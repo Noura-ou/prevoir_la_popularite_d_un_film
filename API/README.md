@@ -10,7 +10,7 @@ Ce projet consiste en une API basée sur FastAPI qui permet de prédire le box o
 
 1. Cloner ce dépôt sur votre machine locale.
 2. Assurez-vous que vous avez toutes les dépendances requises installées. Vous pouvez les installer en exécutant `pip install -r requirements.txt` dans le répertoire du projet.
-3. Assurez-vous d'avoir placé le fichier du modèle pré-entraîné (`pipem.joblib`) dans le même répertoire que les fichiers de l'API.
+3. Assurez-vous d'avoir placé le fichier du modèle pré-entraîné (`best_model.joblib`) dans le même répertoire que les fichiers de l'API.
 4. creer un fichier .env dans le dossier API en notant les infos de connexion a la bdd azure suivants :
 DB_USER='sqladmincinema'
 DB_PASSWORD='Simplon@123456789'
@@ -29,7 +29,8 @@ sudo apt-get install unixodbc-dev, chmod +x Driver_ODBC_Azure.sh
 
 1. Exécutez l'API en exécutant le fichier `main.py` à l'aide de la commande `uvicorn main:app --reload`.
 2. Accédez à l'URL [http://localhost:8000/docs](http://localhost:8000/docs) dans votre navigateur pour accéder à l'interface Swagger de l'API. Vous pouvez utiliser cette interface pour tester les points d'extrémité de l'API.
-3. Utilisez le point d'extrémité `/predict/` pour prédire le box office d'un film en fournissant le titre du film en tant que paramètre.
+3. Modifier l'url de fastapi et ajouter /docs pour entrer sur la page des endpoints.
+4. Utilisez le point d'extrémité `/predict/` pour prédire le box office d'un film en fournissant le titre du film en tant que paramètre.
 
 ## Fonctionnement
 

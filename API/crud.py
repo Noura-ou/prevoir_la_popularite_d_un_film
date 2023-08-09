@@ -41,21 +41,14 @@ def update_from_azure_db():
            MAX(annee_production) AS annee_production,
            STRING_AGG(acteurs, ',') AS acteurs,
            STRING_AGG(top_acteurs.acteur, ',') AS acteurs_connus
-<<<<<<< HEAD
            FROM movies
            INNER JOIN actors ON movies.id = actors.film_id
            INNER JOIN top_acteurs ON actors.id_acteurs_films = top_acteurs.id
-=======
-           FROM films
-           INNER JOIN acteurs_films ON films.id = acteurs_films.film_id
-           INNER JOIN top_acteurs ON acteurs_films.id_acteurs_films = top_acteurs.id
->>>>>>> 16245f4e14ebc5f40522c16abfd1075b9568cb43
            GROUP BY titre;
             """
 
         df_azure_data = pd.read_sql(query, conn)
 
-<<<<<<< HEAD
 # Fermer la connexion après utilisationS
         conn.close()
 
@@ -84,11 +77,6 @@ def update_from_azure_db():
 #         df_azure_data['durée'].fillna(0, inplace=True)
 #         df_azure_data['annee_production'].fillna(0, inplace=True)
 
-=======
-# Fermer la connexion après utilisation
-        conn.close()
-
->>>>>>> 16245f4e14ebc5f40522c16abfd1075b9568cb43
 # Fonction pour nettoyer le nom d'un acteur
         def clean_name(name):
             name = name.lower()  # Convertir en minuscules
@@ -132,12 +120,5 @@ def update_from_azure_db():
 
 
 
-<<<<<<< HEAD
 
 
-=======
-  
-
-
- 
->>>>>>> 16245f4e14ebc5f40522c16abfd1075b9568cb43
