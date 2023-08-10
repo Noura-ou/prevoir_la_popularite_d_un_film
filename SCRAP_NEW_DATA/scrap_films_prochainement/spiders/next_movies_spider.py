@@ -23,7 +23,7 @@ class NextMoviesSpider(scrapy.Spider):
 
     # URL de la première page
     base_url = 'https://www.allocine.fr/film/agenda'
-    num_weeks = 2
+    num_weeks = 1
     
     def start_requests(self):
         today = datetime.today()
