@@ -36,6 +36,16 @@ class Migration(migrations.Migration):
                 'db_table': 'films',
             },
         ),
+        migrations.CreateModel(
+            name='Movies',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('titre', models.CharField(max_length=500)),
+            ],
+            options={
+                'db_table': 'movies',
+            },
+        ),
         migrations.AddField(
             model_name='acteurs_films',
             name='film_id',
