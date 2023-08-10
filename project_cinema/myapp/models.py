@@ -12,7 +12,7 @@ class Film(models.Model):
 
 
     class Meta:
-        db_table = 'films'
+        db_table = 'dataset_model_ML'
 
 
 
@@ -21,5 +21,5 @@ class Acteurs_films(models.Model):
     acteurs = models.CharField(max_length=500)
 
     class Meta:
-        db_table = 'acteurs_films'
+        db_table = 'actors'
 
