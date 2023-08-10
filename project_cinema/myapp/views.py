@@ -103,3 +103,8 @@ def dashboard(request):
         'wordcloud_url': wordcloud_url,
     }
     return render(request, 'pages_main/dashboard.html', context)
+
+
+def model_overview(request):
+    
+    return render(request, 'pages_main/model_overview.html')
