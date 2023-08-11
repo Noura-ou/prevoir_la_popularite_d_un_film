@@ -36,10 +36,6 @@ class SignupPage(CreateView):
     template_name = 'registration/signup.html'
 
 
-
-
-
-
 def box_office(request):
     films = Movies.objects.all()  # Récupérez tous les films de la base de données
     predictions = []
