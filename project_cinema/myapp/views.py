@@ -40,34 +40,6 @@ class SignupPage(CreateView):
     template_name = 'registration/signup.html'
 
 
-
-# def box_office(request):
-#     films = Movies.objects.all()  # Récupérez tous les films de la base de données
-#     predictions = []
-
-#     # Parcourez la liste des films et effectuez les prédictions pour chaque film
-#     for film in films:
-#         data = {'titre': film.titre}
-
-#         # URL de votre API FastAPI déployée sur Azure
-#         api_url = 'http://20.164.88.206/predict/'  # Utilisez l'URL correcte de votre API
-
-#         # Appel de l'API FastAPI
-#         response = requests.post(api_url, json=data)
-
-#         if response.status_code == 200:
-#             prediction_value = response.json().get('box_office_prediction')
-#             movies_instance = Movies.objects.get(titre=film.titre)  # Obtenez l'objet Movies correspondant
-#             prediction_instance = Prediction(film=movies_instance, prediction=prediction_value)
-#             prediction_instance.save()
-#             predictions.append({'film': film, 'prediction': prediction_value})
-#         else:
-#             predictions.append({'film': film, 'prediction': 'Erreur'})
-
-#     return render(request, 'pages_main/prediction_template.html', {'predictions': predictions})
-
-
-
 def box_office(request):
     selected_date = request.GET.get('date_filter')
 
@@ -110,11 +82,10 @@ def box_office(request):
     predictions = sorted(predictions, key=itemgetter('prediction'), reverse=True)
     # Sélectionner uniquement les 10 premières prédictions (top 10)
     top_10_predictions = predictions[:10]
-
-
     return render(request, 'pages_main/prediction_template.html', {'predictions': top_10_predictions})
 
 
+@login_required
 def dashboard(request):
     films = Movies.objects.all()
     df = pd.DataFrame(list(films.values()))
@@ -180,17 +151,10 @@ def dashboard(request):
     plt.title('Box Office Sum per Week')
     plt.xticks(rotation=45)
     plt.legend()
-
-    
-    
-    # Save the bar chart image
     bar_chart_path = 'box_office_by_week.png'
     plt.tight_layout()
     plt.savefig(os.path.join(settings.MEDIA_ROOT, bar_chart_path))
     plt.close()
-
-
-    # Save images to the 'media' directory using FileSystemStorage
     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     pie_chart_url = fs.url(pie_chart_path)
@@ -232,10 +196,13 @@ def scraping_boxoffice_view(request):
     return render(request, 'pages_main/home.html')
 
 
+
 def model_overview(request):
     return render(request, 'pages_main/model_overview.html')
 
 
+
+@login_required
 def home_user(request):
     # Obtenez la date d'aujourd'hui
     today = date.today()
@@ -253,17 +220,11 @@ def home_user(request):
     # If a date is selected, convert it to the correct format and filter films based on the selected date
     if selected_date_str:
         selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
-
-#Get films for the selected date
-        films = Movies.objects.filter(date=selected_date)
-
-        # Predict box office for each film and store predictions in a list
         predictions = []
         for film in films:
             data = {'titre': film.titre}
             # URL de votre API FastAPI déployée sur Azure
             api_url = 'http://20.164.88.206/predict/'  # Utilisez l'URL correcte de votre API
-#Appel de l'API FastAPI
             response = requests.post(api_url, json=data)
 
             if response.status_code == 200:
