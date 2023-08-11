@@ -27,7 +27,7 @@ sudo apt-get install unixodbc-dev, chmod +x Driver_ODBC_Azure.sh
 ## Utilisation
 
 1. Exécutez l'API en exécutant le fichier `main.py` à l'aide de la commande `uvicorn main:app --reload`.
-2. Accédez à l'URL [http://localhost:8000/docs](http://localhost:8000/docs) dans votre navigateur pour accéder à l'interface Swagger de l'API. Vous pouvez utiliser cette interface pour tester les points d'extrémité de l'API.
+2. Accédez à l'URL [http://apicinema12.southafricanorth.azurecontainer.io/docs](http://apicinema12.southafricanorth.azurecontainer.io/docs) dans votre navigateur pour accéder à l'interface Swagger de l'API. Vous pouvez utiliser cette interface pour tester les points d'extrémité de l'API.
 3. Modifier l'url de fastapi et ajouter /docs pour entrer sur la page des endpoints.
 4. Utilisez le point d'extrémité `/predict/` pour prédire le box office d'un film en fournissant le titre du film en tant que paramètre.
 
