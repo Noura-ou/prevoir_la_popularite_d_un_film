@@ -151,10 +151,17 @@ def dashboard(request):
     plt.title('Box Office Sum per Week')
     plt.xticks(rotation=45)
     plt.legend()
+
+    
+    
+    # Save the bar chart image
     bar_chart_path = 'box_office_by_week.png'
     plt.tight_layout()
     plt.savefig(os.path.join(settings.MEDIA_ROOT, bar_chart_path))
     plt.close()
+
+
+    # Save images to the 'media' directory using FileSystemStorage
     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     pie_chart_url = fs.url(pie_chart_path)
@@ -167,7 +174,6 @@ def dashboard(request):
     }
     
     return render(request, 'pages_main/dashboard.html', context)
-
 
 def scraping_view(request):
     if request.method == 'POST':
